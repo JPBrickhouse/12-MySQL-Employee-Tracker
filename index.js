@@ -78,31 +78,31 @@ function employeeManager() {
     }).then(function (answer) {
         switch (answer.action) {
             case "View all employees": {
-
+                viewAllEmployees();
                 break;
             }
             case "View all employees by department": {
-
+                viewAllByDepartment();
                 break;
             }
             case "View all employees by role": {
-
+                viewAllByRole();
                 break;
             }
             case "Add department": {
-
+                addDepartment();
                 break;
             }
             case "Add role": {
-
+                addRole();
                 break;
             }
             case "Add employee": {
-
+                addEmployee();
                 break;
             }
             case "Update employee role": {
-
+                updateEmployeeRole();
                 break;
             }
             case "Exit": {
@@ -113,3 +113,30 @@ function employeeManager() {
     })
 }
 
+function viewAllEmployees() {
+
+}
+
+function viewAllByDepartment() {
+
+}
+
+function viewAllByRole() {
+
+}
+
+function addDepartment() {
+
+}
+
+function addRole() {
+
+}
+
+function addEmployee() {
+
+}
+
+function updateEmployeeRole () {
+    
+}
