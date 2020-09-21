@@ -23,7 +23,27 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     // Throwing an error if one occurs
     if (err) throw err;
-    
+
+    // Text to ASCII Art Generator (TAAG)
+    // http://patorjk.com/software/taag/
+    console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+    console.log("#######")
+    console.log("#       #    # #####  #       ####  #   # ###### ######")
+    console.log("#       ##  ## #    # #      #    #  # #  #      #")
+    console.log("#####   # ## # #    # #      #    #   #   #####  #####")
+    console.log("#       #    # #####  #      #    #   #   #      #")
+    console.log("#       #    # #      #      #    #   #   #      #")
+    console.log("####### #    # #      ######  ####    #   ###### ######")
+    console.log("")
+    console.log("#     #")
+    console.log("##   ##   ##   #    #   ##    ####  ###### #####")
+    console.log("# # # #  #  #  ##   #  #  #  #    # #      #    #")
+    console.log("#  #  # #    # # #  # #    # #      #####  #    #")
+    console.log("#     # ###### #  # # ###### #  ### #      #####")
+    console.log("#     # #    # #   ## #    # #    # #      #   #")
+    console.log("#     # #    # #    # #    #  ####  ###### #    #")
+    console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+
     // Running the employeManager function
     employeeManager();
 });
@@ -92,3 +112,4 @@ function employeeManager() {
         }
     })
 }
+
