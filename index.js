@@ -118,14 +118,18 @@ function employeeManager() {
 
 function viewAllEmployees() {
     // Creating the query selector to be used to get the data from MySQL
-    var query = "SELECT * FROM employees"
-    
+    // Need to leave a space at the end of a line if another line follows with a query +=
+    var query = "SELECT * FROM employees " // Selecting everything from employees
+    query += "LEFT JOIN roles ON (employees.role_id = roles.id) "
+    query += "LEFT JOIN departments ON (roles.department_id = departments.id)"
+
     // Making the query to the database
     connection.query(query,function(err,res) {
         // If there's an error, throw the error    
         if (err) throw err;
 
         // CONSOLE TABLE DISPLAY OF THE RESPONSE
+        console.log(res[0]);
         console.table(res);
 
         // CURRENTLY THIS ONLY DISPLAYS BASIC DATA...
