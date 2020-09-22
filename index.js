@@ -11,12 +11,12 @@ var connection = mysql.createConnection({
     // Your port; if not 3306
     port: 3306,
 
-    // Your username
+    // Username
     user: "root",
 
-    // Your password
-    password: "", // INPUT PASSWORD
-    database: "" // INPUT DATABASE
+    // Password
+    password: "", // root password
+    database: "employeeDB" // MySQL database being referenced
 });
 
 // Making the connection to the database
@@ -50,7 +50,7 @@ connection.connect(function (err) {
 
 // The employeeManager function is the "main menu" for the employee manager application
 function employeeManager() {
-
+    // Running inquirer to ask the user what they want to do...
     inquirer.prompt({
         name: "action",
         type: "list",
@@ -76,6 +76,9 @@ function employeeManager() {
             // "View department budget"
         ]
     }).then(function (answer) {
+        // Callback function that runs a switch case
+        // Depending on what the user selected,
+        // Run that particular function
         switch (answer.action) {
             case "View all employees": {
                 viewAllEmployees();
@@ -138,5 +141,5 @@ function addEmployee() {
 }
 
 function updateEmployeeRole () {
-    
+
 }
