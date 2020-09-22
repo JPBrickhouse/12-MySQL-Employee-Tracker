@@ -15,7 +15,7 @@ var connection = mysql.createConnection({
     user: "root",
 
     // Password
-    password: "", // root password
+    password: "MyNeighborTotoro867", // root password
     database: "employeeDB" // MySQL database being referenced
 });
 
@@ -117,29 +117,96 @@ function employeeManager() {
 }
 
 function viewAllEmployees() {
+    // Creating the query selector to be used to get the data from MySQL
+    var query = "SELECT * FROM employees"
+    
+    // Making the query to the database
+    connection.query(query,function(err,res) {
+        // If there's an error, throw the error    
+        if (err) throw err;
 
+        // CONSOLE TABLE DISPLAY OF THE RESPONSE
+        console.table(res);
+
+        // CURRENTLY THIS ONLY DISPLAYS BASIC DATA...
+        // Need to do the following:
+        // - Display the role name, not just the id
+        // - Display the department name
+        // - Display the salary
+        // - Display the manager name, not just the id
+
+
+        employeeManager();
+    });
 }
 
 function viewAllByDepartment() {
+    // Another inquirer prompt
+    // The list of all the options should be the list of departments
+    
+
+    // Creating the query selector to be used to get the data from MySQL
+
+    // Making the query to the database
+
 
 }
 
 function viewAllByRole() {
+    // Another inquirer prompt
+    // The list of all the options should be the list of roles
+
+
+    // Creating the query selector to be used to get the data from MySQL
+
+    // Making the query to the database
 
 }
 
 function addDepartment() {
+    // Another inquirer prompt
+    // Asking for an input
+
+
+    // Creating the query selector to be used to get the data from MySQL
+
+    // Making the query to the database
 
 }
 
 function addRole() {
+    // Another inquirer prompt
+    // Asking for an input
+
+    // Creating the query selector to be used to get the data from MySQL
+
+    // Making the query to the database
 
 }
 
 function addEmployee() {
+    // Another inquirer prompt
+    // Asking a series of questions:
+    // - First Name - INPUT
+    // - Last Name - INPUT
+    // - Role - SELECT FROM A LIST OF ROLES
+    // - Manager - SELECT FROM A LIST OF EMPLOYEES
+
+    // Creating the query selector to be used to get the data from MySQL
+
+    // Making the query to the database
 
 }
 
 function updateEmployeeRole () {
+    // Another inquirer prompt
+    // Asking a series of questions:
+    // - Employee Name - SELECT FROM A LIST OF EMPLOYEES
+    // - Role - SELECT FROM A LIST OF ROLES
+
+
+    // Creating the query selector to be used to get the data from MySQL
+
+    // Making the query to the database
 
 }
