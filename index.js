@@ -124,7 +124,7 @@ function viewAllEmployees() {
     query += "LEFT JOIN departments ON (roles.department_id = departments.id)"
 
     // Making the query to the database
-    connection.query(query,function(err,res) {
+    connection.query(query, function (err, res) {
         // If there's an error, throw the error    
         if (err) throw err;
 
@@ -132,14 +132,7 @@ function viewAllEmployees() {
         console.log(res[0]);
         console.table(res);
 
-        // CURRENTLY THIS ONLY DISPLAYS BASIC DATA...
-        // Need to do the following:
-        // - Display the role name, not just the id
-        // - Display the department name
-        // - Display the salary
-        // - Display the manager name, not just the id
-
-
+        // Running employee manager again
         employeeManager();
     });
 }
@@ -147,7 +140,7 @@ function viewAllEmployees() {
 function viewAllByDepartment() {
     // Another inquirer prompt
     // The list of all the options should be the list of departments
-    
+
 
     // Creating the query selector to be used to get the data from MySQL
 
@@ -168,33 +161,66 @@ function viewAllByRole() {
 }
 
 function addDepartment() {
-    // Another inquirer prompt
-    // Asking for an input
+    inquirer
+        .prompt({
+            name: "newDepartment",
+            type: "input",
+            message: "What is the name of the department you are adding?",
+            validate: Boolean
+            // validate: Boolean will return false if you get null or an empty string
+            // Therefore, it successfully ensures that you can't enter an empty string
+        }).then(function (answer) {
 
 
-    // Creating the query selector to be used to get the data from MySQL
 
-    // Making the query to the database
 
+            // Creating the query selector to be used to get the data from MySQL
+
+            // Making the query to the database
+
+
+            // Running employee manager again
+            employeeManager();
+        });
 }
 
 function addRole() {
-    // Another inquirer prompt
-    // Asking for an input
+    inquirer
+        .prompt({
+            name: "newRole",
+            type: "input",
+            message: "What is the name of the role you are adding?",
+            validate: Boolean
+            // validate: Boolean will return false if you get null or an empty string
+            // Therefore, it successfully ensures that you can't enter an empty string
+        }).then(function (answer) {
 
-    // Creating the query selector to be used to get the data from MySQL
+            // Creating the query selector to be used to get the data from MySQL
 
-    // Making the query to the database
+            // Making the query to the database
 
+
+            employeeManager();
+        });
 }
 
 function addEmployee() {
     // Another inquirer prompt
+
     // Asking a series of questions:
     // - First Name - INPUT
     // - Last Name - INPUT
     // - Role - SELECT FROM A LIST OF ROLES
-    // - Manager - SELECT FROM A LIST OF EMPLOYEES
+
+    // - Are they a manager? Yes / No
+
+    // - If they are a manager...
+    // - Manager over which employee(s) - SELECT FROM A LIST OF EMPLOYEES
+
+    // - If they aren't a manager...
+    // - Who is their manager - SELECT FROM A LIST OF MANAGERS
+
+
 
     // Creating the query selector to be used to get the data from MySQL
 
@@ -202,7 +228,7 @@ function addEmployee() {
 
 }
 
-function updateEmployeeRole () {
+function updateEmployeeRole() {
     // Another inquirer prompt
     // Asking a series of questions:
     // - Employee Name - SELECT FROM A LIST OF EMPLOYEES
