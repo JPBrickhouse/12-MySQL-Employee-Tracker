@@ -118,10 +118,22 @@ function employeeManager() {
 
 function viewAllEmployees() {
     // Creating the query selector to be used to get the data from MySQL
-    // Need to leave a space at the end of a line if another line follows with a query +=
-    var query = "SELECT * FROM employees " // Selecting everything from employees
-    query += "LEFT JOIN roles ON (employees.role_id = roles.id) "
-    query += "LEFT JOIN departments ON (roles.department_id = departments.id)"
+    // Sometimes need to leave a space at the end of a line
+    var query = (
+        "SELECT " +
+        "e.id," +
+        "e.first_name," +
+        "e.last_name," +
+        "r.title," +
+        "d.department_name," +
+        "r.salary " +
+        // MANAGER NAME, sourced from e.manager_id, and then referencing e.id
+        "FROM employees AS e " +
+        "INNER JOIN roles AS r " +
+        "ON (e.role_id = r.id) " +
+        "INNER JOIN departments AS d " +
+        "ON (r.department_id = d.id)"
+    );
 
     // Making the query to the database
     connection.query(query, function (err, res) {
