@@ -3,12 +3,14 @@ CREATE DATABASE employeeDB;
 
 USE employeeDB;
 
+-- Departments Table
 CREATE TABLE departments (
     id INT NOT NULL AUTO_INCREMENT,
     department_name VARCHAR(30) NOT NULL,
     PRIMARY KEY (id)
 );
 
+-- Roles Table
 CREATE TABLE roles (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(30) NOT NULL,
@@ -18,6 +20,7 @@ CREATE TABLE roles (
     FOREIGN KEY(department_id) REFERENCES departments(id)
 );
 
+-- Employees Table
 CREATE TABLE employees (
     id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(30) NOT NULL,

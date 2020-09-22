@@ -1,5 +1,6 @@
 USE employeeDB;
 
+-- Seeding the departments table
 INSERT INTO departments
     (id,department_name)
 VALUES
@@ -7,6 +8,7 @@ VALUES
     (NULL, "Movies"),
     (NULL, "Video Games");
 
+-- Seeding the roles table
 INSERT INTO roles
     (id,title,salary,department_id)
 VALUES
@@ -20,6 +22,7 @@ VALUES
     (NULL, "Art Director", 60000, 3),
     (NULL, "Animator", 35000, 3);
 
+-- Seeding the employees table
 INSERT INTO employees
     (id,first_name,last_name,role_id,manager_id)
 VALUES
