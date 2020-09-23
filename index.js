@@ -334,23 +334,101 @@ function addDepartment() {
 }
 
 function addRole() {
-    inquirer
-        .prompt({
-            name: "newRole",
-            type: "input",
-            message: "What is the name of the role you are adding?",
-            validate: Boolean
-            // validate: Boolean will return false if you get null or an empty string
-            // Therefore, it successfully ensures that you can't enter an empty string
-        }).then(function (answer) {
+    // Creating the query selector to be used to get the data from MySQL
+    // This query gets ALL of the department names
+    var query1 = (
+        "SELECT " +
+        "d.id, " +
+        "d.department_name " +
+        "FROM departments AS d"
+    );
 
-            // Creating the query selector to be used to get the data from MySQL
+    // Making the query to the database
+    connection.query(query1, function (err1, res1) {
+        // If there's an error, throw the error 
+        if (err1) throw err1;
 
+        // Creating an empty array for future use
+        var listOfDepartmentNames = [];
+
+        // Looping through the response object
+        for (var i = 0; i < res1.length; i++) {
+            // Pushing the department name into the listOfDepartmentNames
+            listOfDepartmentNames.push(res1[i].department_name);
+        }
+
+        // Running inquirer to ask the user what role they want to add
+        inquirer.prompt(
+            [
+                {
+                    name: "newRole",
+                    type: "input",
+                    message: "What is the name of the role you are adding?",
+                    validate: Boolean
+                    // validate: Boolean will return false if you get null or an empty string
+                    // Therefore, it successfully ensures that you can't enter an empty string
+                },
+                {
+                    name: "whatDept",
+                    type: "list",
+                    message: "In which department does this role belong?",
+                    choices: listOfDepartmentNames // Using the array – consisting of all the department names – to create the list of choices
+
+                },
+                {
+                    name: "whatSalary",
+                    type: "input",
+                    message: "What is the salary of this role?",
+                    validate: function (id) {
+                        var valid = isNaN(id);
+                        if (valid) {
+                            console.log("\nPlease enter a valid number")
+                            return false;
+                        }
+                        else {
+                            return true;
+                        }
+                    }
+                }
+            ]
+        ).then(function (answer) {
+
+            // Initializing a deptID variable for future use
+            var deptID = 0;
+            // Going into each element of the res1 response
+            // (res1 consisted of an object with department ids and department names)
+            res1.forEach(element => {
+                // if the department name matches that provided by the user...
+                // set the department ID
+                if (element.department_name === answer.whatDept) {
+                    deptID = element.id;
+                }
+            });
+
+            // Creating the query that will add the role
+            var query2 = (
+                "INSERT INTO roles " +
+                "(id,title,salary,department_id) " +
+                "VALUES " +
+                "(NULL,(?),(?),(?))"
+            )
+
+            // Making an array of the queryInputs
+            var queryInputs = [answer.newRole, answer.whatSalary, deptID];
+        
             // Making the query to the database
+            connection.query(query2, queryInputs, function (err2, res2) {
+                // If there's an error, throw the error
+                if (err2) throw err2;
 
+                // Console logging a successful add to the database
+                console.log(`Successfully added ${answer.newRole} to the database`)
 
-            employeeManager();
+                // Running employee manager again
+                employeeManager();
+            })
         });
+    });
 }
 
 function addEmployee() {
