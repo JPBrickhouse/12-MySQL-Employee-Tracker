@@ -515,12 +515,53 @@ function addEmployee() {
                 if (answer.managerYesNo === "No") {
                     inquirer.prompt(
                         [{
-                            name: "roleSelect",
+                            name: "reportToName",
                             type: "list",
                             message: "Who do they report to?",
                             choices: listOfEmployees
                         }]
-                    )
+                    ).then(function (answer2) {
+
+                        // For both the managerID and the roleID...
+                        // Going into each element of either res1 or res2
+                        // Finding the corresponding match (either role or manager name)
+                        // And then assigning the corresponding ID
+                        var managerID = 0;
+                        res2.forEach(element => {
+                            if (element.EmployeeFullName === answer2.reportToName) {
+                                managerID = element.id;
+                            }
+                        })
+                        var roleID = 0;
+                        res1.forEach(element => {
+                            if (element.title === answer.roleSelect) {
+                                roleID = element.id
+                            }
+                        })
+
+                        // Creating the query that will add the employee
+                        var query3 = (
+                            "INSERT INTO employees " +
+                            "(id,first_name,last_name,role_id,manager_id) " +
+                            "VALUES " +
+                            "(NULL,(?),(?),(?),(?))"
+                        )
+                        
+                        // Making an array of the employeeQueryInputs
+                        var employeeQueryInputs = [answer.firstName, answer.lastName, roleID, managerID];
+                        
+                        // Making the query to the database to add the new employee
+                        connection.query(query3, employeeQueryInputs, function (err3, res3) {
+                            // If there's an error, throw the error 
+                            if (err3) throw err3;
+
+                            // Console logging a successful add to the database
+                            console.log(`Successfully added ${answer.firstName} ${answer.lastName} to the database`);
+
+                            // Running employee manager again
+                            employeeManager();
+                        })
+                    })
                 }
             })
         })
