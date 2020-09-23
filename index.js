@@ -216,6 +216,8 @@ function viewAllByDepartment() {
                 "WHERE d.department_name = (?)"
             );
 
+            // Making the query to the database
+            // Using the value of answer.deptSelect in place of the (?) in query2
             connection.query(query2, [answer.deptSelect], function (err2, res2) {
                 // If there's an error, throw the error
                 if (err2) throw err2;
