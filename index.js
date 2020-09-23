@@ -202,7 +202,7 @@ function viewAllByDepartment() {
                 "d.department_name AS DepartmentName, " +
                 "e.first_name AS First_Name, " +
                 "e.last_name AS Last_Name, " +
-                "r.title AS JobTitle, " +
+                "r.title AS RoleTitle, " +
                 "r.salary AS Salary, " +
                 "CONCAT(manager.first_name, ' ', manager.last_name) AS Manager " +
                 "FROM employees AS e " +
@@ -233,13 +233,70 @@ function viewAllByDepartment() {
 }
 
 function viewAllByRole() {
-    // Another inquirer prompt
-    // The list of all the options should be the list of roles
-
-
     // Creating the query selector to be used to get the data from MySQL
+    // This query gets ALL of the role names
+    var query1 = (
+        "SELECT " +
+        "r.title " +
+        "FROM roles AS r"
+    );
 
     // Making the query to the database
+    connection.query(query1, function (err1, res1) {
+        // If there's an error, throw the error 
+        if (err1) throw err1;
+
+        // Creating an empty array for future use
+        var listOfRoleTitles = [];
+
+        // Looping through the response object
+        for (var i = 0; i < res1.length; i++) {
+            // Pushing the role name into the listOfRoleTitles
+            listOfRoleTitles.push(res1[i].title);
+        }
+
+        // Running inquirer to ask the user what role title they want to select
+        inquirer.prompt({
+            name: "roleSelect",
+            type: "list",
+            message: "From which role would you like to select?",
+            choices: listOfRoleTitles // Using the array – consisting of all the role titles – to create the list of choices
+        }).then(function (answer) {
+
+            var query2 = (
+                // Similar query to the one in viewAllEmployees()
+                "SELECT " +
+                "r.title AS RoleTitle, " +
+                "e.first_name AS First_Name, " +
+                "e.last_name AS Last_Name, " +
+                "r.salary AS Salary, " +
+                "d.department_name AS DepartmentName, " +
+                "CONCAT(manager.first_name, ' ', manager.last_name) AS Manager " +
+                "FROM employees AS e " +
+                "INNER JOIN roles AS r ON (e.role_id = r.id) " +
+                "INNER JOIN departments AS d ON (r.department_id = d.id) " +
+                "LEFT JOIN employees manager ON manager.id = e.manager_id " +
+                // The one difference is this line:
+                // When using the MySQL package, use ?s in place of any values to be inserted,
+                // which are then swapped out with corresponding elements in the array.
+                // This helps us avoid an exploit known as SQL injection
+                "WHERE r.title = (?)"
+            );
+            
+            // Making the query to the database
+            // Using the value of answer.deptSelect in place of the (?) in query2
+            connection.query(query2, [answer.roleSelect], function (err2, res2) {
+                // If there's an error, throw the error
+                if (err2) throw err2;
+
+                // CONSOLE TABLE DISPLAY OF THE RESPONSE
+                console.table(res2);
+
+                // Running employee manager again
+                employeeManager();
+            });
+        });
+    });
 
 }
 
