@@ -479,6 +479,8 @@ function addEmployee() {
             ]
         ).then(function (answer) {
 
+            // Creating the query selector to be used to get the data from MySQL
+            // This gets all of the employees
             var query2 = (
                 "SELECT " +
                 "e.first_name, " +
@@ -488,6 +490,7 @@ function addEmployee() {
                 "FROM employees AS e"
             );
 
+            // Making the query to the database
             connection.query(query2, function (err2, res2) {
                 // If there's an error, throw the error 
                 if (err2) throw err2;
@@ -501,16 +504,43 @@ function addEmployee() {
                     listOfEmployees.push(res2[i].EmployeeFullName);
                 }
 
-                // if (answer.managerYesNo === "Yes") {
-                //     inquirer.prompt(
-                //         [{
-                //             name: "roleSelect",
-                //             type: "list",
-                //             message: "Who do they manage?",
-                //             choices: listOfEmployees
-                //         }]
-                //     )
-                // }
+                // Two possible outcomes will occur, depending on whether or not the new employee is a manager
+
+                if (answer.managerYesNo === "Yes") {
+
+                    // Creating the query that will add the employee
+                    var query3 = (
+                        "INSERT INTO employees " +
+                        "(id,first_name,last_name,role_id,manager_id) " +
+                        "VALUES " +
+                        "(NULL,(?),(?),(?),NULL)"
+                    )
+
+                    // Going into res1
+                    // Finding the corresopnding match of the role name/title
+                    // Assigning the corresponding roleID
+                    var roleID = 0;
+                    res1.forEach(element => {
+                        if (element.title === answer.roleSelect) {
+                            roleID = element.id
+                        }
+                    })
+
+                    // Making an array of the employeeQueryInputs
+                    var employeeQueryInputs = [answer.firstName, answer.lastName, roleID];
+
+                    // Making the query to the database to add the new employee
+                    connection.query(query3, employeeQueryInputs, function (err3, res3) {
+                        // If there's an error, throw the error 
+                        if (err3) throw err3;
+
+                        // Console logging a successful add to the database
+                        console.log(`Successfully added ${answer.firstName} ${answer.lastName} to the database`);
+
+                        // Running employee manager again
+                        employeeManager();
+                    })
+                }
 
                 if (answer.managerYesNo === "No") {
                     inquirer.prompt(
@@ -546,10 +576,10 @@ function addEmployee() {
                             "VALUES " +
                             "(NULL,(?),(?),(?),(?))"
                         )
-                        
+
                         // Making an array of the employeeQueryInputs
                         var employeeQueryInputs = [answer.firstName, answer.lastName, roleID, managerID];
-                        
+
                         // Making the query to the database to add the new employee
                         connection.query(query3, employeeQueryInputs, function (err3, res3) {
                             // If there's an error, throw the error 
