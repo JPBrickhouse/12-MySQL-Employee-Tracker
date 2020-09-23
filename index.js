@@ -120,19 +120,36 @@ function viewAllEmployees() {
     // Creating the query selector to be used to get the data from MySQL
     // Sometimes need to leave a space at the end of a line
     var query = (
+        // SELECT is the "FINAL" Table that gets displayed
+        // Using AS [string] after the SELECT stuff is HOW the returned information gets displayed
         "SELECT " +
-        "e.id," +
-        "e.first_name," +
-        "e.last_name," +
-        "r.title," +
-        "d.department_name," +
-        "r.salary " +
-        // MANAGER NAME, sourced from e.manager_id, and then referencing e.id
+        "e.id AS EmployeeID, " +
+        "e.first_name AS FirstName, " +
+        "e.last_name AS LastName, " +
+        "r.title AS JobTitle, " +
+        "d.department_name AS DepartmentName, " +
+        "r.salary AS Salary, " +
+        "CONCAT(manager.first_name, ' ', manager.last_name) AS ManagerName " +
+        
+        // The FROM command is used to specify which table to select or delete data from.
         "FROM employees AS e " +
-        "INNER JOIN roles AS r " +
-        "ON (e.role_id = r.id) " +
-        "INNER JOIN departments AS d " +
-        "ON (r.department_id = d.id)"
+        
+        // The INNER JOIN keyword selects records that have matching values in both tables.
+        
+        // Using the employee role ID to go into the roles table and find a matching role ID
+        "INNER JOIN roles AS r ON (e.role_id = r.id) " +
+        
+        // Using the roles department ID to go into the departments table and find a matching department ID
+        "INNER JOIN departments AS d ON (r.department_id = d.id) " +
+        
+        // The LEFT JOIN keyword returns all records from the left table and the matched records from the right table
+        // In this instance, FROM employees makes employees the "left" table...
+        // And LEFT JOIN employees manager makes employees manager the "right" table.
+        // NOTE about this LEFT JOIN, as it is essentially a "SELF" JOIN (i.e. essentially reference its own table)
+        // employees is the original table, and manager is the "alias / copy" that is used to be referenced
+        // https://stackoverflow.com/questions/2458519/explanation-of-self-joins
+        // https://www.sqlitetutorial.net/sqlite-self-join/
+        "LEFT JOIN employees manager ON manager.id = e.manager_id"
     );
 
     // Making the query to the database
