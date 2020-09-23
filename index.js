@@ -139,7 +139,10 @@ function viewAllEmployees() {
         // employees is the original table, and manager is the "alias / copy" that is used to be referenced
         // https://stackoverflow.com/questions/2458519/explanation-of-self-joins
         // https://www.sqlitetutorial.net/sqlite-self-join/
-        "LEFT JOIN employees manager ON manager.id = e.manager_id"
+        "LEFT JOIN employees manager ON manager.id = e.manager_id " +
+
+        // Returns all the values sorted by employee ID
+        "ORDER BY e.id"
     );
 
     // Making the query to the database
@@ -597,12 +600,6 @@ function addEmployee() {
         })
     })
 }
-
-// Creating the query selector to be used to get the data from MySQL
-
-// Making the query to the database
-
-
 
 function updateEmployeeRole() {
     // Another inquirer prompt
