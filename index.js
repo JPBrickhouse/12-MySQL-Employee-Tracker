@@ -64,16 +64,6 @@ function employeeManager() {
             "Add employee",
             "Update employee role",
             "Exit"
-
-            // Above are the basic choices.
-            // If these are accomplished and there is time,
-            // consider adding more choices below:
-            // "Update employee manager"
-            // "View all employees by manager"
-            // "Delete department"
-            // "Delete role"
-            // "Delete employee"
-            // "View department budget"
         ]
     }).then(function (answer) {
         // Callback function that runs a switch case
@@ -415,7 +405,7 @@ function addRole() {
 
             // Making an array of the queryInputs
             var queryInputs = [answer.newRole, answer.whatSalary, deptID];
-        
+
             // Making the query to the database
             connection.query(query2, queryInputs, function (err2, res2) {
                 // If there's an error, throw the error
@@ -432,28 +422,116 @@ function addRole() {
 }
 
 function addEmployee() {
-    // Another inquirer prompt
-
-    // Asking a series of questions:
-    // - First Name - INPUT
-    // - Last Name - INPUT
-    // - Role - SELECT FROM A LIST OF ROLES
-
-    // - Are they a manager? Yes / No
-
-    // - If they are a manager...
-    // - Manager over which employee(s) - SELECT FROM A LIST OF EMPLOYEES
-
-    // - If they aren't a manager...
-    // - Who is their manager - SELECT FROM A LIST OF MANAGERS
-
-
-
     // Creating the query selector to be used to get the data from MySQL
+    // This query gets ALL of the role names
+    var query1 = (
+        "SELECT " +
+        "r.title, " +
+        "r.id " +
+        "FROM roles AS r"
+    );
 
     // Making the query to the database
+    connection.query(query1, function (err1, res1) {
+        // If there's an error, throw the error 
+        if (err1) throw err1;
 
+        // Creating an empty array for future use
+        var listOfRoleTitles = [];
+
+        // Looping through the response object
+        for (var i = 0; i < res1.length; i++) {
+            // Pushing the role name into the listOfRoleTitles
+            listOfRoleTitles.push(res1[i].title);
+        }
+
+        // Running inquirer to ask the user information about the employee they are adding
+        inquirer.prompt(
+            [
+                {
+                    name: "firstName",
+                    type: "input",
+                    message: "What is the new employee's first name?",
+                    validate: Boolean
+                    // validate: Boolean will return false if you get null or an empty string
+                    // Therefore, it successfully ensures that you can't enter an empty string
+                },
+                {
+                    name: "lastName",
+                    type: "input",
+                    message: "What is the new employee's last name?",
+                    validate: Boolean
+                    // validate: Boolean will return false if you get null or an empty string
+                    // Therefore, it successfully ensures that you can't enter an empty string
+                },
+                {
+                    name: "roleSelect",
+                    type: "list",
+                    message: "What role are they being assigned?",
+                    choices: listOfRoleTitles // Using the array – consisting of all the role titles – to create the list of choices
+                },
+                {
+                    name: "managerYesNo",
+                    type: "list",
+                    message: "Are they a manager?",
+                    choices: ["Yes", "No"]
+                }
+            ]
+        ).then(function (answer) {
+
+            var query2 = (
+                "SELECT " +
+                "e.first_name, " +
+                "e.last_name, " +
+                "e.id, " +
+                "CONCAT(e.first_name, ' ', e.last_name) AS EmployeeFullName " +
+                "FROM employees AS e"
+            );
+
+            connection.query(query2, function (err2, res2) {
+                // If there's an error, throw the error 
+                if (err2) throw err2;
+
+                // Creating an empty array for future use
+                var listOfEmployees = [];
+
+                // Looping through the response object
+                for (var i = 0; i < res2.length; i++) {
+                    // Pushing the role name into the listOfEmployees
+                    listOfEmployees.push(res2[i].EmployeeFullName);
+                }
+
+                // if (answer.managerYesNo === "Yes") {
+                //     inquirer.prompt(
+                //         [{
+                //             name: "roleSelect",
+                //             type: "list",
+                //             message: "Who do they manage?",
+                //             choices: listOfEmployees
+                //         }]
+                //     )
+                // }
+
+                if (answer.managerYesNo === "No") {
+                    inquirer.prompt(
+                        [{
+                            name: "roleSelect",
+                            type: "list",
+                            message: "Who do they report to?",
+                            choices: listOfEmployees
+                        }]
+                    )
+                }
+            })
+        })
+    })
 }
+
+// Creating the query selector to be used to get the data from MySQL
+
+// Making the query to the database
+
+
 
 function updateEmployeeRole() {
     // Another inquirer prompt
