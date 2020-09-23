@@ -118,9 +118,9 @@ function employeeManager() {
 
 function viewAllEmployees() {
     // Creating the query selector to be used to get the data from MySQL
-    // Sometimes need to leave a space at the end of a line
+    // Except for the last line, you generally need to leave a space within the quotation marks at the end of a line
     var query = (
-        // SELECT is the "FINAL" Table that gets displayed
+        // SELECT is the "FINAL" Table of information that gets displayed
         // Using AS [string] after the SELECT stuff is HOW the returned information gets displayed
         "SELECT " +
         "e.id AS EmployeeID, " +
@@ -130,18 +130,18 @@ function viewAllEmployees() {
         "d.department_name AS DepartmentName, " +
         "r.salary AS Salary, " +
         "CONCAT(manager.first_name, ' ', manager.last_name) AS ManagerName " +
-        
+
         // The FROM command is used to specify which table to select or delete data from.
         "FROM employees AS e " +
-        
+
         // The INNER JOIN keyword selects records that have matching values in both tables.
-        
+
         // Using the employee role ID to go into the roles table and find a matching role ID
         "INNER JOIN roles AS r ON (e.role_id = r.id) " +
-        
+
         // Using the roles department ID to go into the departments table and find a matching department ID
         "INNER JOIN departments AS d ON (r.department_id = d.id) " +
-        
+
         // The LEFT JOIN keyword returns all records from the left table and the matched records from the right table
         // In this instance, FROM employees makes employees the "left" table...
         // And LEFT JOIN employees manager makes employees manager the "right" table.
@@ -154,11 +154,10 @@ function viewAllEmployees() {
 
     // Making the query to the database
     connection.query(query, function (err, res) {
-        // If there's an error, throw the error    
+        // If there's an error, throw the error
         if (err) throw err;
 
         // CONSOLE TABLE DISPLAY OF THE RESPONSE
-        console.log(res[0]);
         console.table(res);
 
         // Running employee manager again
@@ -167,15 +166,68 @@ function viewAllEmployees() {
 }
 
 function viewAllByDepartment() {
-    // Another inquirer prompt
-    // The list of all the options should be the list of departments
-
-
     // Creating the query selector to be used to get the data from MySQL
+    // This query gets ALL of the department names
+    var query1 = (
+        "SELECT " +
+        "d.department_name " +
+        "FROM departments AS d"
+    );
 
     // Making the query to the database
+    connection.query(query1, function (err1, res1) {
+        // If there's an error, throw the error 
+        if (err1) throw err1;
 
+        // Creating an empty array for future use
+        var listOfDepartmentNames = [];
 
+        // Looping through the response object
+        for (var i = 0; i < res1.length; i++) {
+            // Pushing the department name into the listOfDepartmentNames
+            listOfDepartmentNames.push(res1[i].department_name);
+        }
+
+        // Running inquirer to ask the user what department they want to select
+        inquirer.prompt({
+            name: "deptSelect",
+            type: "list",
+            message: "From which department would you like to select?",
+            choices: listOfDepartmentNames // Using the array – consisting of all the department names – to create the list of choices
+        }).then(function (answer) {
+
+            var query2 = (
+                // Similar query to the one in viewAllEmployees()
+                "SELECT " +
+                "d.department_name AS DepartmentName, " +
+                "e.first_name AS First_Name, " +
+                "e.last_name AS Last_Name, " +
+                "r.title AS JobTitle, " +
+                "r.salary AS Salary, " +
+                "CONCAT(manager.first_name, ' ', manager.last_name) AS Manager " +
+                "FROM employees AS e " +
+                "INNER JOIN roles AS r ON (e.role_id = r.id) " +
+                "INNER JOIN departments AS d ON (r.department_id = d.id) " +
+                "LEFT JOIN employees manager ON manager.id = e.manager_id " +
+                // The one difference is this line:
+                // When using the MySQL package, use ?s in place of any values to be inserted,
+                // which are then swapped out with corresponding elements in the array.
+                // This helps us avoid an exploit known as SQL injection
+                "WHERE d.department_name = (?)"
+            );
+
+            connection.query(query2, [answer.deptSelect], function (err2, res2) {
+                // If there's an error, throw the error
+                if (err2) throw err2;
+
+                // CONSOLE TABLE DISPLAY OF THE RESPONSE
+                console.table(res2);
+
+                // Running employee manager again
+                employeeManager();
+            });
+        });
+    });
 }
 
 function viewAllByRole() {
