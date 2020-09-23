@@ -282,7 +282,7 @@ function viewAllByRole() {
                 // This helps us avoid an exploit known as SQL injection
                 "WHERE r.title = (?)"
             );
-            
+
             // Making the query to the database
             // Using the value of answer.deptSelect in place of the (?) in query2
             connection.query(query2, [answer.roleSelect], function (err2, res2) {
@@ -301,27 +301,36 @@ function viewAllByRole() {
 }
 
 function addDepartment() {
-    inquirer
-        .prompt({
-            name: "newDepartment",
-            type: "input",
-            message: "What is the name of the department you are adding?",
-            validate: Boolean
-            // validate: Boolean will return false if you get null or an empty string
-            // Therefore, it successfully ensures that you can't enter an empty string
-        }).then(function (answer) {
+    // Running inquirer to ask the user what department they want to add
+    inquirer.prompt({
+        name: "newDept",
+        type: "input",
+        message: "What is the name of the department you are adding?",
+        validate: Boolean
+        // validate: Boolean will return false if you get null or an empty string
+        // Therefore, it successfully ensures that you can't enter an empty string
+    }).then(function (answer) {
 
+        // Creating the query that will add the department
+        var query = (
+            "INSERT INTO departments " +
+            "(id,department_name) " +
+            "VALUES " +
+            "(NULL, (?))"
+        )
 
+        // Making the query to the database
+        connection.query(query, [answer.newDept], function (err, res) {
+            // If there's an error, throw the error
+            if (err) throw err;
 
-
-            // Creating the query selector to be used to get the data from MySQL
-
-            // Making the query to the database
-
+            // Console logging a successful add to the database
+            console.log(`Successfully added ${answer.newDept} to the database`)
 
             // Running employee manager again
             employeeManager();
         });
+    });
 }
 
 function addRole() {
