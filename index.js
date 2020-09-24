@@ -1,9 +1,9 @@
-
+// ---------------------------------------------------------------------------------------
 // Importing the necessary packages
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var cTable = require('console.table');
-
+// ---------------------------------------------------------------------------------------
 // Creating a connection to the MySQL database
 var connection = mysql.createConnection({
     host: "localhost",
@@ -18,7 +18,7 @@ var connection = mysql.createConnection({
     password: "MyNeighborTotoro867", // root password
     database: "employeeDB" // MySQL database being referenced
 });
-
+// ---------------------------------------------------------------------------------------
 // Making the connection to the database
 connection.connect(function (err) {
     // Throwing an error if one occurs
@@ -47,7 +47,7 @@ connection.connect(function (err) {
     // Running the employeManager function
     employeeManager();
 });
-
+// ---------------------------------------------------------------------------------------
 // The employeeManager function is the "main menu" for the employee manager application
 function employeeManager() {
     // Running inquirer to ask the user what they want to do...
@@ -105,7 +105,7 @@ function employeeManager() {
         }
     })
 }
-
+// ---------------------------------------------------------------------------------------
 function viewAllEmployees() {
     // Creating the query selector to be used to get the data from MySQL
     // Except for the last line, you generally need to leave a space within the quotation marks at the end of a line
@@ -157,7 +157,7 @@ function viewAllEmployees() {
         employeeManager();
     });
 }
-
+// ---------------------------------------------------------------------------------------
 function viewAllByDepartment() {
     // Creating the query selector to be used to get the data from MySQL
     // This query gets ALL of the department names
@@ -224,7 +224,7 @@ function viewAllByDepartment() {
         });
     });
 }
-
+// ---------------------------------------------------------------------------------------
 function viewAllByRole() {
     // Creating the query selector to be used to get the data from MySQL
     // This query gets ALL of the role names
@@ -292,7 +292,7 @@ function viewAllByRole() {
     });
 
 }
-
+// ---------------------------------------------------------------------------------------
 function addDepartment() {
     // Running inquirer to ask the user what department they want to add
     inquirer.prompt({
@@ -325,7 +325,7 @@ function addDepartment() {
         });
     });
 }
-
+// ---------------------------------------------------------------------------------------
 function addRole() {
     // Creating the query selector to be used to get the data from MySQL
     // This query gets ALL of the department names
@@ -423,7 +423,7 @@ function addRole() {
         });
     });
 }
-
+// ---------------------------------------------------------------------------------------
 function addEmployee() {
     // Creating the query selector to be used to get the data from MySQL
     // This query gets ALL of the role names
@@ -568,7 +568,7 @@ function addEmployee() {
                         var roleID = 0;
                         res1.forEach(element => {
                             if (element.title === answer.roleSelect) {
-                                roleID = element.id
+                                roleID = element.id;
                             }
                         })
 
@@ -600,16 +600,114 @@ function addEmployee() {
         })
     })
 }
-
+// ---------------------------------------------------------------------------------------
 function updateEmployeeRole() {
-    // Another inquirer prompt
-    // Asking a series of questions:
-    // - Employee Name - SELECT FROM A LIST OF EMPLOYEES
-    // - Role - SELECT FROM A LIST OF ROLES
-
-
     // Creating the query selector to be used to get the data from MySQL
+    // This gets all of the employees
+    var query1 = (
+        "SELECT " +
+        "e.first_name, " +
+        "e.last_name, " +
+        "e.id, " +
+        "CONCAT(e.first_name, ' ', e.last_name) AS EmployeeFullName " +
+        "FROM employees AS e"
+    );
 
     // Making the query to the database
+    connection.query(query1, function (err1, res1) {
 
+        // If there's an error, throw the error 
+        if (err1) throw err1;
+
+        // Creating an empty array for future use
+        var listOfEmployees = [];
+
+        // Looping through the response object
+        for (var i = 0; i < res1.length; i++) {
+            // Pushing the role name into the listOfEmployees
+            listOfEmployees.push(res1[i].EmployeeFullName);
+        }
+
+        // Running inquirer to ask which employee is being updated?
+        inquirer.prompt(
+            [{
+                name: "employeeToUpdate",
+                type: "list",
+                message: "Which employee are you updating?",
+                choices: listOfEmployees
+            }]
+        ).then(function (answer1) {
+
+            // Creating the query selector to be used to get the data from MySQL
+            // This query gets ALL of the role names
+            var query2 = (
+                "SELECT " +
+                "r.title, " +
+                "r.id " +
+                "FROM roles AS r"
+            );
+
+            // Making the query to the database
+            connection.query(query2, function (err2, res2) {
+                // If there's an error, throw the error 
+                if (err2) throw err2;
+
+                // Creating an empty array for future use
+                var listOfRoleTitles = [];
+
+                // Looping through the response object
+                for (var i = 0; i < res2.length; i++) {
+                    // Pushing the role name into the listOfRoleTitles
+                    listOfRoleTitles.push(res2[i].title);
+                }
+
+                // Running inquirer to ask which role they are receiving?
+                inquirer.prompt(
+                    [{
+                        name: "roleToUpdate",
+                        type: "list",
+                        message: "What is their new role?",
+                        choices: listOfRoleTitles
+                    }]
+                ).then(function (answer2) {
+
+                    // For the employeeID and the roleID
+                    // Going into each element of either res1 or res2
+                    // Finding the corresponding match (either employee name or role title)
+                    // And then assigning the corresponding ID
+                    var employeeID = 0;
+                    res1.forEach(element => {
+                        if (element.EmployeeFullName === answer1.employeeToUpdate) {
+                            employeeID = element.id;
+                        }
+                    })
+                    var roleID = 0;
+                    res2.forEach(element => {
+                        if (element.title === answer2.roleToUpdate) {
+                            roleID = element.id;
+                        }
+                    })
+
+                    // Creating the query that will revise the employee role
+                    var query3 = (
+                        "UPDATE employees " +
+                        "SET role_id=(?) " +
+                        "WHERE id=(?)"
+                    )
+
+                    // Making the query to the database to revise the employee role
+                    connection.query(query3, [roleID, employeeID], function (err3, res3) {
+                        // If there's an error, throw the error 
+                        if (err3) throw err3;
+
+                        // Console logging a successful revision to the database
+                        console.log(`Successfully revised ${answer1.employeeToUpdate}'s role to be ${answer2.roleToUpdate} in the database`);
+
+                        // Running employee manager again
+                        employeeManager();
+                    })
+                })
+            })
+        })
+    })
 }
